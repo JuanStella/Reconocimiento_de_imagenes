@@ -9,7 +9,7 @@ class imagen:
 
     def __init__(self):
 
-        self.img = cv2.imread('D:\\Facu\\IA1\\Proyecto\\Imagenes\\tornillo1.jpeg')
+        self.img = cv2.imread('D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\tornillo1.jpeg')
         #pasar a escala de grises la imagen obetenida
         self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         #Redimensionar la imagen a 600x400
