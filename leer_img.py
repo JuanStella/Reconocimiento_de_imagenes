@@ -65,6 +65,10 @@ def main():
     cv2.destroyAllWindows()
     
     momentos_HU = calc_momentos_HU(imgg.img)
+    
+    for i in range(len(momentos_HU)):
+        print(f"Momento de Hu N° {i}: {momentos_HU[i]}")
+
 
 
 if __name__ == '__main__':
