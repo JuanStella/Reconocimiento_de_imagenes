@@ -1,14 +1,12 @@
-import matplotlib.pyplot as pltcd
+import math 
 import numpy as np
 import cv2
-
-
 
 class imagen:
 
 
     def __init__(self):
-
+        
         self.img = cv2.imread('D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\tornillo1.jpeg')
         #pasar a escala de grises la imagen obetenida
         self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
@@ -42,6 +40,18 @@ def binarizar(img):
     return img2
 
 
+def calc_momentos_HU(im):
+    # Calcular Momentos
+    moments = cv2.moments(im)
+    # Calcular Hu Moments
+    huMoments = cv2.HuMoments(moments)
+    # Convertir los valores de huMoments a escalares antes de realizar las operaciones matemáticas
+    huMoments = [moment[0] for moment in huMoments]
+    for i in range(0, 7):
+        huMoments[i] = -1 * math.copysign(1.0, huMoments[i]) * math.log10(abs(huMoments[i]))
+    return huMoments
+
+
 def main():
     imgg = imagen()
     imgg.img = contraste(imgg.img)
@@ -50,9 +60,12 @@ def main():
     imgg.img = binarizar(imgg.img)
     imgg.img = detectar_contornos(imgg.img)
 
-
     cv2.imshow('Tornillo Preprocesado', imgg.img)
     cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    
+    momentos_HU = calc_momentos_HU(imgg.img)
+
 
 if __name__ == '__main__':
     main()
