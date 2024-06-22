@@ -5,16 +5,35 @@ import cv2
 class imagen:
 
 
-    def __init__(self):
-        
-        self.img = cv2.imread('D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\tornillo1.jpeg')
+    def __init__(self , directorio = None):
+        self.img = cv2.imread(directorio)
+        if self.img is None:
+            raise ValueError(f"Error al cargar la imagen desde la ruta: {directorio}")
         #pasar a escala de grises la imagen obetenida
         self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         #Redimensionar la imagen a 600x400
         self.img = cv2.resize(self.img, (600, 600))
-
+        self.momentos_hu = [0] * 7
+        self.preprocesar()
         return None
 
+    def preprocesar(self):
+
+        self.img = contraste(self.img)
+        self.img = eliminar_ruido(self.img)
+        self.img = histogramas(self.img)
+        self.img = binarizar(self.img)
+        self.img = detectar_contornos(self.img)
+
+        cv2.imshow('Tornillo Preprocesado', self.img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+    
+        HU = calc_momentos_HU(self.img)
+    
+        for i in range(len(HU)):
+            self.momentos_hu[i] = HU [i]
+        return self.img
 
 def detectar_contornos(img):
     contornos, _ = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -52,24 +71,3 @@ def calc_momentos_HU(im):
     return huMoments
 
 
-def main():
-    imgg = imagen()
-    imgg.img = contraste(imgg.img)
-    imgg.img = eliminar_ruido(imgg.img)
-    imgg.img = histogramas(imgg.img)
-    imgg.img = binarizar(imgg.img)
-    imgg.img = detectar_contornos(imgg.img)
-
-    cv2.imshow('Tornillo Preprocesado', imgg.img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    
-    momentos_HU = calc_momentos_HU(imgg.img)
-    
-    for i in range(len(momentos_HU)):
-        print(f"Momento de Hu N° {i}: {momentos_HU[i]}")
-
-
-
-if __name__ == '__main__':
-    main()
