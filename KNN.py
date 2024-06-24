@@ -76,7 +76,7 @@ class Knn :
 
 
         plt.xlabel('Momento de Hu 4')
-        plt.ylabel('Circ')
+        plt.ylabel('Circularidad')
         plt.title('Momentos de Hu de las imágenes de la base de datos')
         plt.show()
         return None

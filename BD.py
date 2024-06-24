@@ -6,6 +6,8 @@ class BD:
         self.tuercas = []
         self.arandelas = []
         self.clavos = []
+        self.momentos_Hu = []
+        self.etiquetas = ['Tornillos', 'Tuercas', 'Arandelas', 'Clavos']
 
         self.direc_tornillos = [
             'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\tornillos\\11.jpeg',
@@ -28,7 +30,6 @@ class BD:
             'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\arandelas\\a2.jpeg',
             'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\arandelas\\a3.jpeg',
             'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\arandelas\\a4.jpeg',
-            'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\arandelas\\a5.jpeg',
             'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\arandelas\\a5.jpeg'
         ]
         
@@ -68,6 +69,8 @@ class BD:
                 self.clavos.append(img.momentos_hu)
             except ValueError as e:
                 print(e)
+
+        self.momentos_Hu = self.tornillos + self.tuercas + self.arandelas + self.clavos
 
         return None
     
