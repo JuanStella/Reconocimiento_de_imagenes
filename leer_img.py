@@ -12,7 +12,7 @@ class imagen:
         self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         # Redimensionar la imagen a 600x600
         self.img = cv2.resize(self.img, (600, 600))
-        self.momentos_hu = [0] * 2
+        self.momentos_hu = [0] * 7
         self.circularidad = 0
         self.perimetro = 0
         self.preprocesar()
@@ -23,44 +23,51 @@ class imagen:
         self.img = eliminar_ruido(self.img)
         self.img = histogramas(self.img)
         self.img = binarizar(self.img)
-        self.img, self.circularidad, self.perimetro = detectar_contorno_principal(self.img)
+        cnts,_ = cv2.findContours(self.img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        for c in cnts:
+            epsilon = 0.01*cv2.arcLength(c,True)
+            approx = cv2.approxPolyDP(c,epsilon,True)
+            #print(len(approx))
+            x,y,w,h = cv2.boundingRect(approx)
+
+       
+        if len(approx) >= 10.5 and len(approx) < 15:
+            self.circularidad = len(approx)*2
+        elif len (approx) >= 15:
+            self.circularidad = len(approx)*4
+        else:
+            self.circularidad = len(approx)/2
+
 
         '''cv2.imshow('Imagen', self.img)
         cv2.waitKey(0)
         cv2.destroyAllWindows()'''
 
         HU = calc_momentos_HU(self.img)
-    
+
+            
+
         self.momentos_hu[0] = HU[0]
-        self.momentos_hu[1] = self.circularidad
+        self.momentos_hu[4] = self.circularidad
+        self.momentos_hu[5] = HU[3] 
 
         return self.img
 
 def detectar_contorno_principal(img):
     contornos, _ = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    img2 = cv2.drawContours(np.zeros_like(img), contornos, -1, (255, 255, 255), 1)
-    
-    # Encontrar el contorno con mayor área
-    max_area = 0
-    circularidad = 0
-    
+    # Encontrar el perimetro del contorno principal
+    perimetro = 0
     for contorno in contornos:
-        area = cv2.contourArea(contorno)
         perimetro = cv2.arcLength(contorno, True)
-        
-        max_area = area
-        perimetro = cv2.arcLength(contorno, True)
-        if perimetro != 0:
-            circularidad = (4 * np.pi * area) / (perimetro * perimetro)
-    
-    return img2, circularidad, perimetro
+
+    return perimetro
 
 def histogramas(img):
     img2 = cv2.equalizeHist(img)
     return img2
 
 def contraste(img):
-    img2 = cv2.convertScaleAbs(img, alpha=2, beta=-40)
+    img2 = cv2.convertScaleAbs(img, alpha=2.5, beta=1)
     return img2
 
 def eliminar_ruido(img):
@@ -71,6 +78,10 @@ def binarizar(img):
     _, img2 = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     # Invertir la imagen binarizada para resaltar el tornillo en blanco y el fondo en negro
     img2 = cv2.bitwise_not(img2)
+    return img2
+
+def detectar_contornos(img):
+    img2 = cv2.Canny(img, 100, 200)
     return img2
 
 def calc_momentos_HU(im):
