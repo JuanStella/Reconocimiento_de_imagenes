@@ -8,7 +8,7 @@ class BD:
         self.clavos = []
 
         self.direc_tornillos = [
-            'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\tornillos\\1.jpeg',
+            'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\tornillos\\11.jpeg',
             'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\tornillos\\2.jpeg',
             'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\tornillos\\3.jpeg',
             'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\tornillos\\4.jpeg',
@@ -28,6 +28,7 @@ class BD:
             'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\arandelas\\a2.jpeg',
             'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\arandelas\\a3.jpeg',
             'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\arandelas\\a4.jpeg',
+            'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\arandelas\\a5.jpeg',
             'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\arandelas\\a5.jpeg'
         ]
         
@@ -74,13 +75,33 @@ class BD:
     
     def guardar_momentos_en_archivo(self, archivo):
         with open(archivo, 'w') as f:
+            f.write("Momentos de Hu de las imagenes de los tornillos:\n\n")
             for i, momentos in enumerate(self.tornillos):
                 f.write(f"Imagen {i+1}:\n")
                 for j, momento in enumerate(momentos):
                     f.write(f"  Hu[{j+1}]: {momento:.6f}\n")
                 f.write("\n")
 
-if __name__ == '__main__':
-    bd = BD()
-    bd.cargar_imagenes()
-    bd.guardar_momentos_en_archivo('momentos_hu.txt')
+            f.write("Momentos de Hu de las imagenes de las tuercas:\n\n")
+            for i, momentos in enumerate(self.tuercas):
+                f.write(f"Imagen {i+1}:\n")
+                for j, momento in enumerate(momentos):
+                    f.write(f"  Hu[{j+1}]: {momento:.6f}\n")
+                f.write("\n")
+
+            f.write("Momentos de Hu de las imagenes de las arandelas:\n\n")
+            for i, momentos in enumerate(self.arandelas):
+                f.write(f"Imagen {i+1}:\n")
+                for j, momento in enumerate(momentos):
+                    f.write(f"  Hu[{j+1}]: {momento:.6f}\n")
+                f.write("\n")
+
+            f.write("Momentos de Hu de las imagenes de los clavos:\n\n")
+            for i, momentos in enumerate(self.clavos):
+                f.write(f"Imagen {i+1}:\n")
+                for j, momento in enumerate(momentos):
+                    f.write(f"  Hu[{j+1}]: {momento:.6f}\n")
+                f.write("\n")
+        return None
+    
+
