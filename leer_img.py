@@ -41,22 +41,15 @@ class imagen:
         self.area = cv2.contourArea(approx)
         self.circularidad = len(approx)/25
     
-        '''cv2.imshow('Imagen', self.img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()'''
+     
         HU = calc_momentos_HU(self.img)       
+
+        
         if HU[0] > 2.9:
             HU[0] = HU[0] * 1.2
             self.circularidad = self.circularidad * 1.2
 
-        '''if HU[0] < 2.276:
-            HU[0] = HU[0] * 0.5
-            self.circularidad = self.circularidad * 0.5
-        elif HU[0] > 2.160 and HU[0] < 2.5 and self.circularidad < 0.105:
-            HU[0] = HU[0] * 0.5
-        elif HU[0] > 2.5 and HU[0] < 3 and self.circularidad < 0.205:
-            self.circularidad = self.circularidad + 0.25'''
-            
+
         if HU[0] > 2.2 and HU[0] < 2.8 and self.circularidad < 0.205:
             self.circularidad = self.circularidad + 0.35
         elif HU[0] < 2.17 and self.circularidad < 0.315:

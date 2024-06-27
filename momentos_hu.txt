@@ -186,3 +186,13 @@ Imagen 5:
   Hu[6]: 0.360000
   Hu[7]: 0.000000
 
+
+
+Imagen test
+Momento de HU 1: 2.869344852815421
+Momento de HU 2: 0
+Momento de HU 3: 0
+Momento de HU 4: 0
+Momento de HU 5: 0
+Momento de HU 6: 0.52
+Momento de HU 7: 0
