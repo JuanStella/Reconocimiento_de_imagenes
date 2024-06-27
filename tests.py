@@ -15,7 +15,6 @@ class imagen:
         self.momentos_hu = [0] * 7
         self.circularidad = 0
         self.perimetro = 0
-        self.area = 0
         self.preprocesar()
         return None
 
@@ -30,46 +29,27 @@ class imagen:
             approx = cv2.approxPolyDP(c,epsilon,True)
             #print(len(approx))
             x,y,w,h = cv2.boundingRect(approx)
+
        
-        for contornos in cnts:
-            self.perimetro = cv2.arcLength(contornos, True)
+        if len(approx) >= 10.5 and len(approx) < 15:
+            self.circularidad = len(approx)*2
+        elif len (approx) >= 15:
+            self.circularidad = len(approx)*4
+        else:
+            self.circularidad = len(approx)/2
 
-        # Normalizar el perímetro para que esté entre 0 y 5
-        max_perimetro = 500  # Ajusta este valor según la escala esperada de tus datos
-        self.perimetro = (self.perimetro / max_perimetro)
-        self.perimetro = min(max(self.perimetro, 0), 1)  # Asegurarse de que esté en el rango [0, 5]
-        self.area = cv2.contourArea(approx)
-        self.circularidad = len(approx)/25
-    
-        '''cv2.imshow('Imagen', self.img)
+
+        cv2.imshow('Imagen', self.img)
         cv2.waitKey(0)
-        cv2.destroyAllWindows()'''
-        HU = calc_momentos_HU(self.img)       
-        if HU[0] > 2.9:
-            HU[0] = HU[0] * 1.2
-            self.circularidad = self.circularidad * 1.2
+        cv2.destroyAllWindows()
 
-        '''if HU[0] < 2.276:
-            HU[0] = HU[0] * 0.5
-            self.circularidad = self.circularidad * 0.5
-        elif HU[0] > 2.160 and HU[0] < 2.5 and self.circularidad < 0.105:
-            HU[0] = HU[0] * 0.5
-        elif HU[0] > 2.5 and HU[0] < 3 and self.circularidad < 0.205:
-            self.circularidad = self.circularidad + 0.25'''
+        HU = calc_momentos_HU(self.img)
+
             
-        if HU[0] > 2.2 and HU[0] < 2.8 and self.circularidad < 0.205:
-            self.circularidad = self.circularidad + 0.35
-        elif HU[0] < 2.17 and self.circularidad < 0.315:
-            self.circularidad = self.circularidad + 0.2
-        elif HU[0] < 2.155:
-            HU[0] = HU[0] + 0.15
-        elif HU[0] > 2.2 and HU[0] < 2.4 and self.circularidad < 0.315:
-            HU[0] = HU[0] + 0.25
 
         self.momentos_hu[0] = HU[0]
-        self.momentos_hu[5] = self.circularidad
-
-    
+        self.momentos_hu[4] = self.circularidad
+        self.momentos_hu[5] = HU[3] 
 
         return self.img
 
@@ -87,11 +67,11 @@ def histogramas(img):
     return img2
 
 def contraste(img):
-    img2 = cv2.convertScaleAbs(img, alpha=1, beta= 170)
+    img2 = cv2.convertScaleAbs(img, alpha=2.5, beta=100)
     return img2
 
 def eliminar_ruido(img):
-    img = cv2.GaussianBlur(img, (3,3), 0)
+    img = cv2.GaussianBlur(img, (5, 5), 0)
     return img
 
 def binarizar(img):
@@ -114,3 +94,14 @@ def calc_momentos_HU(im):
     for i in range(0, 7):
         huMoments[i] = -1 * math.copysign(1.0, huMoments[i]) * math.log10(abs(huMoments[i]))
     return huMoments
+
+
+def main():
+    directorio = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\tuertest6.jpeg'
+    img = imagen (directorio)
+    img.preprocesar()
+    return None
+
+
+if __name__ == "__main__":
+    main()

@@ -1,5 +1,4 @@
 # Kmeans.py
-from typing import Counter
 import BD as bd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,9 +13,28 @@ class Kmeans:
         self.bd.guardar_momentos_en_archivo('momentos_hu.txt')
         self.momentos_Hu_np = np.array(self.bd.momentos_Hu)  # Convertir momentos_Hu a una matriz numpy
 
-    def colocar(self, X, it=1000):
-        self.centroides = np.random.uniform(np.amin(X, axis=0), np.amax(X, axis=0), (self.k, X.shape[1]))  # Inicializar los centroides 
+    def colocar(self, X, etiquetas, it=100):
+        # Inicializar los centroides eligiendo un punto de cada clase
+        clases = np.unique(etiquetas)
+        if len(clases) < self.k:
+            raise ValueError(f'Número de clases ({len(clases)}) es menor que k ({self.k}).')
+        
+        self.centroides = []
+        self.cluster_names = []  # Lista para almacenar los nombres de los clusters
+        
+        for clase in clases[:self.k]:
+            indices = np.where(etiquetas == clase)[0]
+            if len(indices) > 0:
+                self.centroides.append(X[indices[0]])  # Elige el primer punto de cada clase
+                self.cluster_names.append(self.bd.etiquetas[clase])  # Asignar el nombre del cluster
+        self.centroides = np.array(self.centroides)
 
+        # Si hay menos clases con datos de las que se necesitan, inicializar centroides restantes aleatoriamente
+        while len(self.centroides) < self.k:
+            random_index = np.random.choice(len(X))
+            self.centroides = np.vstack([self.centroides, X[random_index]])
+            self.cluster_names.append('Cluster ' + str(len(self.cluster_names) + 1))  # Asignar un nombre genérico
+        
         for _ in range(it):
             y = []
 
@@ -38,7 +56,7 @@ class Kmeans:
                 else:
                     centro_clusters.append(np.mean(X[indice], axis=0)[0])
                 
-            if np.max(self.centroides - np.array(centro_clusters)) < 1e-6:
+            if np.max(self.centroides - np.array(centro_clusters)) < 1e-3:
                 break
 
             else:
@@ -55,10 +73,16 @@ class Kmeans:
         return np.argmin(distancias)
 
 
-
 def main():
     km = Kmeans(4)
-    etiquetas_clusters = km.colocar(km.momentos_Hu_np)
+    
+    # Generar etiquetas para los datos
+    etiquetas = np.array([0] * len(km.bd.tornillos) +
+                         [1] * len(km.bd.tuercas) +
+                         [2] * len(km.bd.arandelas) +
+                         [3] * len(km.bd.clavos))
+    
+    etiquetas_clusters = km.colocar(km.momentos_Hu_np, etiquetas)
     
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -67,25 +91,25 @@ def main():
     colores = ['b', 'g', 'r', 'c']  # Definir colores para cada cluster (modifícalos según tus necesidades)
     colores_clusters = [colores[etiqueta] for etiqueta in etiquetas_clusters]
 
-    scatter = ax.scatter(km.momentos_Hu_np[:, 5], km.momentos_Hu_np[:, 4], c=colores_clusters)
+    scatter = ax.scatter(km.momentos_Hu_np[:, 0], km.momentos_Hu_np[:, 5], c=colores_clusters)
     
-    ax.set_xlabel('Momento de Hu 4')
-    ax.set_ylabel('Momento de Hu 5')
+    ax.set_xlabel('Momento de Hu 1')
+    ax.set_ylabel('Momento de Hu 6')
     ax.set_title('K-means en 2D')
 
     # Predecir el cluster al que pertenece el nuevo dato
-    direc_prueba = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\tortest1.jpeg'
+    direc_prueba = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\atest1.jpeg'
     img1 = leer_img.imagen(direc_prueba)
-    ax.scatter(img1.momentos_hu[5], img1.momentos_hu[4], color='black', label='Imagen de test')
+    ax.scatter(img1.momentos_hu[0], img1.momentos_hu[5], color='black', label='Imagen de test')
 
     nuevo_dato = img1.momentos_hu
     cluster_asignado = km.predecir(nuevo_dato)
-    print(f'El nuevo dato pertenece al clúster: {cluster_asignado}')
+    print(f'El nuevo dato pertenece al clúster: {km.cluster_names[cluster_asignado]}')
 
     # Agregar leyenda para los clusters
     etiquetas_unicas = np.unique(etiquetas_clusters)
     for i, etiqueta in enumerate(etiquetas_unicas):
-        ax.scatter([], [], c=colores[i], label=f'Cluster {etiqueta}')
+        ax.scatter([], [], c=colores[i], label=f'{km.cluster_names[etiqueta]}')
 
     ax.legend()
 
@@ -95,4 +119,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
