@@ -58,6 +58,7 @@ class imagen:
             HU[0] = HU[0] + 0.15
         elif HU[0] > 2.2 and HU[0] < 2.4 and self.circularidad < 0.315:
             HU[0] = HU[0] + 0.25
+            
 
         self.momentos_hu[0] = HU[0]
         self.momentos_hu[5] = self.circularidad
