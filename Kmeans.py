@@ -98,7 +98,7 @@ def main():
     ax.set_title('K-means en 2D')
 
     # Predecir el cluster al que pertenece el nuevo dato
-    direc_prueba = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\tuertest6.jpeg'
+    direc_prueba = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\tortest1.jpeg'
     img1 = leer_img.imagen(direc_prueba)
     ax.scatter(img1.momentos_hu[0], img1.momentos_hu[5], color='black', label='Imagen de test')
 

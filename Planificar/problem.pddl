@@ -6,7 +6,7 @@
     (caja tuercas) 
     (caja clavos) 
     (caja tornillos) 
-    (posbase piso)
+    (posicion piso)
     (sobre tuercas tornillos) 
     (sobre tornillos clavos) 
     (sobre clavos arandelas)
