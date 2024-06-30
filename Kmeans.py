@@ -94,11 +94,11 @@ def main():
     scatter = ax.scatter(km.momentos_Hu_np[:, 0], km.momentos_Hu_np[:, 5], c=colores_clusters)
     
     ax.set_xlabel('Momento de Hu 1')
-    ax.set_ylabel('Momento de Hu 6')
+    ax.set_ylabel('Circularidad')
     ax.set_title('K-means en 2D')
 
     # Predecir el cluster al que pertenece el nuevo dato
-    direc_prueba = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\atest1.jpeg'
+    direc_prueba = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\tuertest6.jpeg'
     img1 = leer_img.imagen(direc_prueba)
     ax.scatter(img1.momentos_hu[0], img1.momentos_hu[5], color='black', label='Imagen de test')
 
@@ -110,6 +110,9 @@ def main():
     etiquetas_unicas = np.unique(etiquetas_clusters)
     for i, etiqueta in enumerate(etiquetas_unicas):
         ax.scatter([], [], c=colores[i], label=f'{km.cluster_names[etiqueta]}')
+
+    # Graficar los centroides finales
+    ax.scatter(km.centroides[:, 0], km.centroides[:, 5], color='yellow', marker='*', s=200, label='Centroides')
 
     ax.legend()
 

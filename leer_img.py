@@ -1,21 +1,21 @@
 import math 
-import numpy as np
 import cv2
 
 class imagen:
 
     def __init__(self, directorio=None):
         self.img = cv2.imread(directorio)
+        self.conts = self.img.copy()
         if self.img is None:
             raise ValueError(f"Error al cargar la imagen desde la ruta: {directorio}")
         # Pasar a escala de grises la imagen obtenida
         self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
+        self.conts = cv2.cvtColor(self.conts, cv2.COLOR_BGR2GRAY)
         # Redimensionar la imagen a 600x600
         self.img = cv2.resize(self.img, (600, 600))
+        self.conts = cv2.resize(self.conts, (600, 600))
         self.momentos_hu = [0] * 7
         self.circularidad = 0
-        self.perimetro = 0
-        self.area = 0
         self.preprocesar()
         return None
 
@@ -25,26 +25,23 @@ class imagen:
         self.img = histogramas(self.img)
         self.img = binarizar(self.img)
         cnts,_ = cv2.findContours(self.img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        self.conts = cv2.drawContours(self.conts, cnts, -1, (0, 0, 255), 2)
         for c in cnts:
             epsilon = 0.01*cv2.arcLength(c,True)
             approx = cv2.approxPolyDP(c,epsilon,True)
-            #print(len(approx))
-            x,y,w,h = cv2.boundingRect(approx)
-       
-        for contornos in cnts:
-            self.perimetro = cv2.arcLength(contornos, True)
 
-        # Normalizar el perímetro para que esté entre 0 y 5
-        max_perimetro = 500  # Ajusta este valor según la escala esperada de tus datos
-        self.perimetro = (self.perimetro / max_perimetro)
-        self.perimetro = min(max(self.perimetro, 0), 1)  # Asegurarse de que esté en el rango [0, 5]
-        self.area = cv2.contourArea(approx)
-        self.circularidad = len(approx)/25
     
+        self.circularidad = len(approx)/25
+
+        '''cv2.imshow("imagen",self.img)
+        cv2.imshow("contornos",self.conts)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()'''
+
      
         HU = calc_momentos_HU(self.img)       
 
-        
+        #Procesado manual 
         if HU[0] > 2.9:
             HU[0] = HU[0] * 1.2
             self.circularidad = self.circularidad * 1.2
@@ -63,18 +60,8 @@ class imagen:
         self.momentos_hu[0] = HU[0]
         self.momentos_hu[5] = self.circularidad
 
-    
-
         return self.img
 
-def detectar_contorno_principal(img):
-    contornos, _ = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    # Encontrar el perimetro del contorno principal
-    perimetro = 0
-    for contorno in contornos:
-        perimetro = cv2.arcLength(contorno, True)
-
-    return perimetro
 
 def histogramas(img):
     img2 = cv2.equalizeHist(img)

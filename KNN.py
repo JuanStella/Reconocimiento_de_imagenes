@@ -36,30 +36,6 @@ class Knn :
 
         return distancias
 
-    def graficar_momentos(self):
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-
-        for i in range(5):
-            ax.scatter(self.bd.tornillos[i][0], self.bd.tornillos[i][4], self.bd.tornillos[i][5], color='red', label='Tornillos' if i == 0 else "")
-            ax.scatter(self.bd.tuercas[i][0], self.bd.tuercas[i][4], self.bd.tuercas[i][5], color='blue', label='Tuercas' if i == 0 else "")
-            ax.scatter(self.bd.arandelas[i][0], self.bd.arandelas[i][4], self.bd.arandelas[i][5], color='green', label='Arandelas' if i == 0 else "")
-            ax.scatter(self.bd.clavos[i][0], self.bd.clavos[i][4], self.bd.clavos[i][5], color='purple', label='Clavos' if i == 0 else "")
-
-        img = leer_img.imagen(direc_prueba)
-        ax.scatter(img.momentos_hu[0], img.momentos_hu[4], img.momentos_hu[5], color='black', label='Imagen de test')
-
-        ax.set_xlabel('Momento de Hu 1')
-        ax.set_ylabel('Circularidad')
-        ax.set_zlabel('Momento de Hu 2')
-        ax.set_title('Momentos de Hu de las imágenes de la base de datos')
-
-        handles, labels = ax.get_legend_handles_labels()
-        by_label = dict(zip(labels, handles))
-        ax.legend(by_label.values(), by_label.keys())
-
-        plt.show()
-        return None
     
     def graficar_2D(self, direc_prueba):
         for i in range(5):
@@ -71,7 +47,7 @@ class Knn :
         img1 = leer_img.imagen(direc_prueba)
         plt.scatter(img1.momentos_hu[0], img1.momentos_hu[5], color='black', label='Imagen de test')
 
-        plt.xlabel('Momento de Hu 4')
+        plt.xlabel('Momento de Hu 1')
         plt.ylabel('Circularidad')
         plt.title('Momentos de Hu de las imágenes de la base de datos')
 
@@ -126,12 +102,11 @@ class Knn :
 
         return clase_predominante
 
-direc_prueba = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\tortest7.jpeg'
+direc_prueba = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\tuertest3.jpeg'
     
 def main():
     knn = Knn(5)
     knn.distancia_a_cada_imagen()
-    #knn.graficar_momentos()
     knn.graficar_2D(direc_prueba)
 
 if __name__ == '__main__':
