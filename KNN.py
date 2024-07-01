@@ -11,7 +11,8 @@ class Knn :
         self.bd.cargar_imagenes()
         self.bd.guardar_momentos_en_archivo('momentos_hu.txt')
 
-    def distancia_euclediana(self, momentos_hu):
+    #Suma de las diferencias absolutas de las características de las imágenes
+    def distancia_puntos(self, momentos_hu):
         
         distancias = []
        
@@ -59,7 +60,7 @@ class Knn :
 
     def distancia_a_cada_imagen(self):
         img = leer_img.imagen(direc_prueba)
-        distancias = self.distancia_euclediana(img.momentos_hu)
+        distancias = self.distancia_puntos(img.momentos_hu)
         
         with open('momentos_hu.txt', 'a') as f:
             f.write("\n\nImagen test\n")
@@ -102,7 +103,7 @@ class Knn :
 
         return clase_predominante
 
-direc_prueba = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\tuertest3.jpeg'
+direc_prueba = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\tortest3.jpeg'
     
 def main():
     knn = Knn(5)

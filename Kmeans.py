@@ -13,7 +13,7 @@ class Kmeans:
         self.bd.guardar_momentos_en_archivo('momentos_hu.txt')
         self.momentos_Hu_np = np.array(self.bd.momentos_Hu)  # Convertir momentos_Hu a una matriz numpy
 
-    def colocar(self, X, etiquetas, it=100):
+    def colocar(self, X, etiquetas, it=150):
         # Inicializar los centroides eligiendo un punto de cada clase
         clases = np.unique(etiquetas)
         if len(clases) < self.k:
@@ -22,6 +22,7 @@ class Kmeans:
         self.centroides = []
         self.cluster_names = []  # Lista para almacenar los nombres de los clusters
         
+        #Agregamos los centroides iniciales, que serán el primer dato ingresado de cada clase
         for clase in clases[:self.k]:
             indices = np.where(etiquetas == clase)[0]
             if len(indices) > 0:
@@ -29,15 +30,12 @@ class Kmeans:
                 self.cluster_names.append(self.bd.etiquetas[clase])  # Asignar el nombre del cluster
         self.centroides = np.array(self.centroides)
 
-        # Si hay menos clases con datos de las que se necesitan, inicializar centroides restantes aleatoriamente
-        while len(self.centroides) < self.k:
-            random_index = np.random.choice(len(X))
-            self.centroides = np.vstack([self.centroides, X[random_index]])
-            self.cluster_names.append('Cluster ' + str(len(self.cluster_names) + 1))  # Asignar un nombre genérico
         
         for _ in range(it):
             y = []
-
+            #Se calculan las distancias desde el punto que estamos evaluando,
+            #Hasta los centroides de los clusters. 
+            #Luego se toma el dato como perteneciente el cluster con la menor distancia
             for data_point in X:
                 distancias = Kmeans.distancia_euclediana(data_point, self.centroides)
                 numero_cluster = np.argmin(distancias)
@@ -48,15 +46,17 @@ class Kmeans:
             for i in range(self.k):
                 indice_de_cluster.append(np.argwhere(y == i))  # Obtener los indices de los clusters
             
-            centro_clusters = []
 
+
+            centro_clusters = []
+            #Calcula los nuevos centroides como la media de los puntos asignados a cada cluster.
             for i, indice in enumerate(indice_de_cluster):
                 if len(indice) == 0:
                     centro_clusters.append(self.centroides[i])
                 else:
                     centro_clusters.append(np.mean(X[indice], axis=0)[0])
                 
-            if np.max(self.centroides - np.array(centro_clusters)) < 1e-3:
+            if np.max(self.centroides - np.array(centro_clusters)) < 1e-4:
                 break
 
             else:
@@ -84,6 +84,7 @@ def main():
     
     etiquetas_clusters = km.colocar(km.momentos_Hu_np, etiquetas)
     
+
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
