@@ -1,8 +1,6 @@
 import BD 
 import leer_img
-import math
 import matplotlib.pyplot as plt
-import numpy as np
 class Knn : 
 
     def __init__(self, k):
@@ -17,19 +15,19 @@ class Knn :
         distancias = []
        
         for tornillo in self.bd.tornillos:
-            dist = abs(tornillo[0] - momentos_hu[0]) + abs(tornillo[5] - momentos_hu[5]) + abs (tornillo[6] - momentos_hu[6])
+            dist = abs(tornillo[0] - momentos_hu[0]) + abs(tornillo[5] - momentos_hu[5])
             distancias.append((dist, "Tornillos"))
         
         for tuerca in self.bd.tuercas:
-            dist = abs(tuerca[0] - momentos_hu[0]) + abs(tuerca[5] - momentos_hu[5]) + abs (tuerca[6] - momentos_hu[6])
+            dist = abs(tuerca[0] - momentos_hu[0]) + abs(tuerca[5] - momentos_hu[5]) 
             distancias.append((dist, "Tuercas"))
         
         for arandela in self.bd.arandelas:
-            dist = abs(arandela[0] - momentos_hu[0]) + abs(arandela[5] - momentos_hu[5]) + abs (arandela[6] - momentos_hu[6])
+            dist = abs(arandela[0] - momentos_hu[0]) + abs(arandela[5] - momentos_hu[5]) 
             distancias.append((dist, "Arandelas"))
 
         for clavo in self.bd.clavos:
-            dist = abs(clavo[0] - momentos_hu[0]) + abs(clavo[5] - momentos_hu[5]) + abs (clavo[6] - momentos_hu[6])
+            dist = abs(clavo[0] - momentos_hu[0]) + abs(clavo[5] - momentos_hu[5]) 
             distancias.append((dist, "Clavos"))
         
 
@@ -39,7 +37,7 @@ class Knn :
 
     
     def graficar_2D(self, direc_prueba):
-        for i in range(5):
+        for i in range(12):
             plt.scatter(self.bd.tornillos[i][0], self.bd.tornillos[i][5], color='red', label='Tornillos' if i == 0 else "")
             plt.scatter(self.bd.tuercas[i][0], self.bd.tuercas[i][5], color='blue', label='Tuercas' if i == 0 else "")
             plt.scatter(self.bd.arandelas[i][0], self.bd.arandelas[i][5], color='green', label='Arandelas' if i == 0 else "")
@@ -100,10 +98,12 @@ class Knn :
             clase_predominante = clasee
 
         print(f"\nClase predominante: {clase_predominante}")
+            
+
 
         return clase_predominante
 
-direc_prueba = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\tortest3.jpeg'
+direc_prueba = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\t1.jpeg'
     
 def main():
     knn = Knn(5)

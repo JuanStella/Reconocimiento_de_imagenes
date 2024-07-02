@@ -1,6 +1,6 @@
 import math 
 import cv2
-
+import numpy as np
 class imagen:
 
     def __init__(self, directorio=None):
@@ -16,9 +16,10 @@ class imagen:
         # Redimensionar la imagen a 600x600
         self.img = cv2.resize(self.img, (600, 600))
         self.conts = cv2.resize(self.conts, (600, 600))
+        self.es_tornillo = False
+        self.es_clavo = False
 
         self.momentos_hu = [0] * 7
-        self.circularidad = 0
         self.preprocesar()
         return None
 
@@ -30,41 +31,43 @@ class imagen:
         #Detección de contornos
         cnts,_ = cv2.findContours(self.img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         self.conts = cv2.drawContours(self.conts, cnts, -1, (0, 0, 255), 2)
-        #Aproximación de contornos por cantidad de vértices
-        for c in cnts:
-            epsilon = 0.01*cv2.arcLength(c,True)
-            approx = cv2.approxPolyDP(c,epsilon,True)
 
-    
-        self.circularidad = len(approx)/25
 
         '''cv2.imshow("imagen",self.img)
         cv2.imshow("contornos",self.conts)
         cv2.waitKey(0)
         cv2.destroyAllWindows()'''
 
-     
-        HU = calc_momentos_HU(self.img)       
 
-        #Procesado manual 
-        if HU[0] > 2.9:
-            HU[0] = HU[0] * 1.2
-            self.circularidad = self.circularidad * 1.2
+        HU = calc_momentos_HU(self.img)  
+        # En tu método preprocesar:
+        for c in cnts:
+            if len(c) > 0:  # Asegúrate de que el contorno no esté vacío
+                hu1, circularity = analizar_objeto(c)
 
+                if hu1 < - 0.225:
+                    HU[1] += 5
+                if HU[1] > 13:
+                    HU[1] -=3
 
-        if HU[0] > 2.2 and HU[0] < 2.8 and self.circularidad < 0.205:
-            self.circularidad = self.circularidad + 0.35
-        elif HU[0] < 2.17 and self.circularidad < 0.315:
-            self.circularidad = self.circularidad + 0.2
-        elif HU[0] < 2.155:
-            HU[0] = HU[0] + 0.15
-        elif HU[0] > 2.2 and HU[0] < 2.4 and self.circularidad < 0.315:
-            HU[0] = HU[0] + 0.25
-            
+                if HU[1] < 6 and circularity > 0.6:
+                    circularity -= 0.4
 
-        self.momentos_hu[0] = HU[0]
-        self.momentos_hu[5] = self.circularidad
+                if HU[1] < 4.6 and circularity > 0.2:
+                    circularity += 0.6
 
+                if HU[1] < 6.5 and circularity > 0.6:
+                    circularity -= 0.35
+                # Ajusta estos umbrales según tus datos específicos
+                if circularity < 0.115:
+                   HU[1] = HU[1] + 0.3
+                elif circularity > 0.6 and HU[1] > 6.35:
+                    HU[1] = HU[1] + 2
+            else:
+                print("Contorno inválido")
+
+        self.momentos_hu[0] = HU[1]/15
+        self.momentos_hu[5] = circularity
         return self.img
 
 
@@ -106,3 +109,29 @@ def calc_momentos_HU(im):
     for i in range(0, 7):
         huMoments[i] = -1 * math.copysign(1.0, huMoments[i]) * math.log10(abs(huMoments[i]))
     return huMoments
+
+
+
+def analizar_objeto(contorno):
+    if contorno is None or len(contorno) == 0:
+        return 0, 0, 0  # Retorna valores por defecto si el contorno es inválido
+
+    # Calcular Momentos de Hu
+    moments = cv2.moments(contorno)
+    huMoments = cv2.HuMoments(moments)
+    
+    # Convertir a escala logarítmica
+    for i in range(7):
+        if huMoments[i] != 0:
+            huMoments[i] = -1 * math.copysign(1.0, huMoments[i]) * math.log10(abs(huMoments[i]))
+    
+    hu1 = huMoments[0][0]  # Primer momento de Hu
+    
+    # Calcular área y perímetro
+    area = cv2.contourArea(contorno)
+    perimeter = cv2.arcLength(contorno, True)
+    
+    # Calcular circularidad
+    circularity = 4 * math.pi * area / (perimeter * perimeter) if perimeter > 0 else 0
+    
+    return hu1, circularity

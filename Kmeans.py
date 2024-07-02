@@ -14,12 +14,12 @@ class Kmeans:
         self.momentos_Hu_np = np.array(self.bd.momentos_Hu)  # Convertir momentos_Hu a una matriz numpy
 
     def colocar(self, X, etiquetas, it=150):
-        # Inicializar los centroides eligiendo un punto de cada clase
+
         clases = np.unique(etiquetas)
         if len(clases) < self.k:
             raise ValueError(f'Número de clases ({len(clases)}) es menor que k ({self.k}).')
         
-        self.centroides = []
+        self.centroides = []  #Lista para almacenar los centroides de los clusters
         self.cluster_names = []  # Lista para almacenar los nombres de los clusters
         
         #Agregamos los centroides iniciales, que serán el primer dato ingresado de cada clase
@@ -42,14 +42,19 @@ class Kmeans:
                 y.append(numero_cluster)
             y = np.array(y)
 
+
+            #Inicializa indice_de_cluster para almacenar los índices de los puntos asignados a cada cluster.
+            #Encuentra los índices de los puntos asignados a ese cluster y los guarda en indice_de_cluster.
             indice_de_cluster = []
             for i in range(self.k):
                 indice_de_cluster.append(np.argwhere(y == i))  # Obtener los indices de los clusters
             
 
-
+            #Inicializa centro_clusters para almacenar los nuevos centroides.
+            #Para cada cluster y sus índices en indice_de_cluster:
+            #Si no hay puntos asignados al cluster, mantiene el centroide actual.
+            #Si hay puntos asignados, calcula el nuevo centroide como la media de los puntos asignados.
             centro_clusters = []
-            #Calcula los nuevos centroides como la media de los puntos asignados a cada cluster.
             for i, indice in enumerate(indice_de_cluster):
                 if len(indice) == 0:
                     centro_clusters.append(self.centroides[i])
@@ -99,7 +104,7 @@ def main():
     ax.set_title('K-means en 2D')
 
     # Predecir el cluster al que pertenece el nuevo dato
-    direc_prueba = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\tortest1.jpeg'
+    direc_prueba = 'D:\\Facu\\IA1\\Proyecto\\Reconocimiento_de_imagenes\\Imagenes\\Test\\t2.jpeg'
     img1 = leer_img.imagen(direc_prueba)
     ax.scatter(img1.momentos_hu[0], img1.momentos_hu[5], color='black', label='Imagen de test')
 
