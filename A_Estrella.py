@@ -120,6 +120,8 @@ def algorithm(draw, grid, start, end):
             if event.type == pygame.QUIT:
                 pygame.quit()
 
+		#current = open_set.get()[2]: Se selecciona el nodo con la menor f_score de open_set.
+		#open_set_hash.remove(current): Se elimina el nodo actual del conjunto open_set_hash.
         current = open_set.get()[2]
         open_set_hash.remove(current)
 
@@ -128,7 +130,13 @@ def algorithm(draw, grid, start, end):
             end.make_end()
             start.make_start()
             return True
+		
 
+		#Se calcula un temp_g_score como la g_score del nodo actual más 1 (suponiendo que el costo para mover a un vecino es 1).
+		#Si temp_g_score es menor que la g_score del vecino:
+		#Se actualiza came_from para que el vecino apunte al nodo actual.
+		#Se actualiza g_score y f_score del vecino.
+		#Si el vecino no está en open_set_hash, se añade a open_set y open_set_hash.
         for neighbor in current.neighbors:
             temp_g_score = g_score[current] + 1
 
@@ -203,13 +211,14 @@ def main(win, width):
 			
 			if event.type == pygame.QUIT:
 				run = False
-				
+		
 
 			grid[10][11].make_barrier()
 			for i in range(12):
 				for j in range(12):
 					if i % 2 == 0 and j != 0 and j != 5 and i !=0:  # Ajuste en la generación del laberinto
 						grid[j][i].make_barrier()
+
 
 			if pygame.mouse.get_pressed()[0]: # LEFT
 				pos = pygame.mouse.get_pos()

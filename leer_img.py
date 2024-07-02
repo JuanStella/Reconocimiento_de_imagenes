@@ -44,7 +44,9 @@ class imagen:
         for c in cnts:
             if len(c) > 0:  # Asegúrate de que el contorno no esté vacío
                 hu1, circularity = analizar_objeto(c)
-
+                
+                #Solo usamos el momento de HU 0 para el procesamiento manual
+                #Donde nos está ayudando a separar más los puntos según HU[1], que es el segundo momento de HU
                 if hu1 < - 0.225:
                     HU[1] += 5
                 if HU[1] > 13:
